@@ -3,6 +3,7 @@ const path = require("path");
 const express = require("express");
 const morgan = require("morgan");
 const { createServer: createViteServer } = require("vite");
+const client = require("./db/client");
 
 const PORT = process.env.PORT ?? 3000;
 
@@ -11,6 +12,7 @@ const PORT = process.env.PORT ?? 3000;
  * since we need to wait for the Vite server to be created
  */
 const createApp = async () => {
+  await client.connect();
   const app = express();
 
   // Logging middleware
