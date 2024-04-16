@@ -1,6 +1,6 @@
 const { ServerError } = require("../../errors");
 const client = require("../../db/client");
-const jwt = require("./jwt");
+const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const router = require("express").Router();
 const SALT_ROUNDS = 10;
@@ -42,7 +42,7 @@ router.post("/register", async (req, res, next) => {
       [username, hash]
     );
 
-    const token = jwt.sign({ id: newUser.id });
+    const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET);
     res.json({ token });
   } catch (err) {
     next(err);
@@ -69,7 +69,7 @@ router.post("/login", async (req, res, next) => {
     `,
       [username]
     );
-    console.log("USER:", user);
+
     if (!user) {
       throw new ServerError(
         400,
@@ -83,7 +83,7 @@ router.post("/login", async (req, res, next) => {
       throw new ServerError(401, "Invalid password.");
     }
 
-    const token = jwt.sign({ id: user.id });
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
     res.json({ token });
   } catch (err) {
     next(err);

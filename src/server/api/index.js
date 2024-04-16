@@ -1,6 +1,5 @@
 const { ServerError } = require("../errors");
-
-const jwt = require("./auth/jwt");
+const jwt = require("jsonwebtoken");
 
 const router = require("express").Router();
 module.exports = router;
@@ -15,7 +14,7 @@ router.use(async (req, res, next) => {
   }
   // Get user from token
   try {
-    const { id } = jwt.verify(token);
+    const { id } = jwt.verify(token, process.env.JWT_SECRET);
     const user = await client.query(
       `
       SELECT * FROM users
