@@ -39,4 +39,4 @@ Table User {
 
 The frontend is a [React](https://react.dev/) app created with [Vite](https://vitejs.dev/). Vite middleware is used in development, but the frontend should be built for production.
 
-Routing is handled with [React Router](https://reactrouter.com/en/main). The router is defined in `src/client/main.jsx`.
+Routing is handled with [React Router](https://reactrouter.com/en/main).
