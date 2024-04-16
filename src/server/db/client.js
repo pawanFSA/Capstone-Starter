@@ -1,9 +1,10 @@
 const { Client } = require("pg");
 
-const YOUR_DATABASE_NAME = "capstone";
+// First make sure you create a database locally!
+const db = "capstone"; // replace with your db name
 
 const connectionString =
-  process.env.DATABASE_URL || `https://localhost:5432/${YOUR_DATABASE_NAME}`;
+  process.env.DATABASE_URL || `https://localhost:5432/${db}`;
 
 const client = new Client({
   connectionString,

@@ -35,10 +35,10 @@ const createApp = async () => {
     });
   } else {
     // Pulled from https://vitejs.dev/config/server-options.html#server-middlewaremode
-    // const vite = await createViteServer({
-    //   server: { middlewareMode: true },
-    // });
-    // app.use(vite.middlewares);
+    const vite = await createViteServer({
+      server: { middlewareMode: true },
+    });
+    app.use(vite.middlewares);
   }
 
   // Simple error handling middleware
