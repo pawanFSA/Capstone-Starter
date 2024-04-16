@@ -13,9 +13,9 @@ async function init() {
     await buildTables();
     await seedData();
   } catch (error) {
-    client.end();
     process.exit(1);
   }
+  await client.end();
 }
 
 init();

@@ -9,7 +9,8 @@
   "scripts": {
     "dev": "nodemon src/server/index.js",
     "build": "vite build",
-    "start": "node src/server"
+    "start": "node src/server",
+    "seed": "node src/server/db/seed"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
