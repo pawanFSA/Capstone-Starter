@@ -1,8 +1,9 @@
 const { ServerError } = require("../../errors");
-const prisma = require("../../prisma");
+const client = require("../../db/client");
 const jwt = require("./jwt");
 const bcrypt = require("bcrypt");
 const router = require("express").Router();
+const SALT_ROUNDS = 10;
 module.exports = router;
 
 /** Creates new account and returns token */
@@ -16,20 +17,30 @@ router.post("/register", async (req, res, next) => {
     }
 
     // Check if account already exists
-    const user = await prisma.user.findUnique({
-      where: { username },
-    });
-    if (user) {
-      throw new ServerError(
-        400,
-        `Account with username ${username} already exists.`
-      );
+    const user = await client.query(
+      `
+      SELECT * FROM users
+      WHERE username = $1 
+    `,
+      [username]
+    );
+
+    if (!user) {
+      throw new ServerError(401, "That user name already exists");
     }
 
     // Create new user
-    const newUser = await prisma.user.create({
-      data: { username, password },
-    });
+    const hash = await bcrypt.hash(password, SALT_ROUNDS);
+    const {
+      rows: [newUser],
+    } = await client.query(
+      `
+      INSERT INTO users(username, password)
+      VALUES($1, $2)
+      ON CONFLICT (username) DO NOTHING
+      RETURNING *`,
+      [username, hash]
+    );
 
     const token = jwt.sign({ id: newUser.id });
     res.json({ token });
@@ -49,9 +60,16 @@ router.post("/login", async (req, res, next) => {
     }
 
     // Check if account exists
-    const user = await prisma.user.findUnique({
-      where: { username },
-    });
+    const {
+      rows: [user],
+    } = await client.query(
+      `
+      SELECT * FROM users
+      WHERE username = $1 
+    `,
+      [username]
+    );
+    console.log("USER:", user);
     if (!user) {
       throw new ServerError(
         400,

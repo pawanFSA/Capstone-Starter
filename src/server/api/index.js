@@ -1,5 +1,5 @@
 const { ServerError } = require("../errors");
-const prisma = require("../prisma");
+
 const jwt = require("./auth/jwt");
 
 const router = require("express").Router();
@@ -13,11 +13,16 @@ router.use(async (req, res, next) => {
   if (!authHeader || !token) {
     return next();
   }
-
   // Get user from token
   try {
     const { id } = jwt.verify(token);
-    const user = await prisma.user.findUniqueOrThrow({ where: { id } });
+    const user = await client.query(
+      `
+      SELECT * FROM users
+      WHERE id = $1
+    `,
+      [id]
+    );
     res.locals.user = user;
     next();
   } catch (err) {
@@ -27,4 +32,3 @@ router.use(async (req, res, next) => {
 });
 
 router.use("/auth", require("./auth"));
-router.use("/tasks", require("./tasks"));
